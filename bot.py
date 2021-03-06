@@ -21,7 +21,9 @@ class Player:
         self.meds = 300
         self.victories = 0
         self.defeats = 0
-        
+    def train(self):
+        increase_xp = random.randint(1,6)
+        self.xp += increase_xp
 
 @client.event
 async def on_ready():
