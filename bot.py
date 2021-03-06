@@ -18,7 +18,7 @@ class Player:
         self.fighterJets = 10
         self.soldiers = 5000
         self.bombs = 100
-        self.meds =
+        self.meds = 300
         self.victories = 0
         self.defeats = 0
         
