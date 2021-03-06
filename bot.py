@@ -21,10 +21,31 @@ class Player:
         self.meds = 300
         self.victories = 0
         self.defeats = 0
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> 98e436af99726d11facb3947b7ab39e8d6cfd9da
     def train(self):
         increase_xp = random.randint(1,10)
         self.xp += increase_xp
+        def spinAndWin(self):
+        self.coins -= 600
+        prize = random.choice(['xp', 'coins', 'tanks', 'fighterJets', 'soldiers', 'bombs', 'meds'])
+        if prize == 'xp':
+            self.xp += random.randint(1,10)
+        if prize == 'coins':
+            self.coins += random.randint(20,300) + random.randint(20,600) + random.randint(60,600)
+        if prize == 'tanks':
+            self.tanks += random.randint(1,5) + random.randint(0,5)
+        if prize == 'fighterJets':
+            self.fighterJets += random.randint(1,3) + random.randint(0,2)
+        if prize == 'soldiers':
+            self.soldiers += random.randint(50,500) + random.randint(50,500) + random.randint(50,500) + random.randint(50,500)
+        if prize == 'bombs':
+            self.bombs += random.randint(3,10) + random.randint(3, 10) + random.randint(4, 10)
+        if prize == 'meds':
+            self.meds += random.randint(5,30) + random.randint(5,30)
 
     def spinAndWin(self):
         self.coins -= 600
