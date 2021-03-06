@@ -8,11 +8,12 @@ load_dotenv('.env')
 
 client = discord.Client()
 
+
 class Player:
     def __init__(self, player_name, player_id):
         self.name = player_name
         self.id = player_id
-        self.xp = 50                            # for account creation lol
+        self.xp = 50                                                   # for account creation lol
         self.coins = 2000
         self.tanks = 20
         self.fighterJets = 10
@@ -21,49 +22,49 @@ class Player:
         self.meds = 300
         self.victories = 0
         self.defeats = 0
-<<<<<<< HEAD
 
-=======
-        
->>>>>>> 98e436af99726d11facb3947b7ab39e8d6cfd9da
     def train(self):
-        increase_xp = random.randint(1,10)
+        increase_xp = random.randint(1, 10)
         self.xp += increase_xp
-        def spinAndWin(self):
-        self.coins -= 600
-        prize = random.choice(['xp', 'coins', 'tanks', 'fighterJets', 'soldiers', 'bombs', 'meds'])
-        if prize == 'xp':
-            self.xp += random.randint(1,10)
-        if prize == 'coins':
-            self.coins += random.randint(20,300) + random.randint(20,600) + random.randint(60,600)
-        if prize == 'tanks':
-            self.tanks += random.randint(1,5) + random.randint(0,5)
-        if prize == 'fighterJets':
-            self.fighterJets += random.randint(1,3) + random.randint(0,2)
-        if prize == 'soldiers':
-            self.soldiers += random.randint(50,500) + random.randint(50,500) + random.randint(50,500) + random.randint(50,500)
-        if prize == 'bombs':
-            self.bombs += random.randint(3,10) + random.randint(3, 10) + random.randint(4, 10)
-        if prize == 'meds':
-            self.meds += random.randint(5,30) + random.randint(5,30)
+
+    def buy_tanks(self, x):
+        self.coins -= 400 * x
+        self.tanks += x
+
+    def buy_fighterJets(self, x):
+        self.coins -= 800 * x
+        self.fighterJets += x
+
+    def buy_soldiers(self, x):
+        self.coins -= 3 * x
+        self.soldiers += x
+
+    def buy_bombs(self, x):
+        self.coins -= 10 * x
+        self.bombs += x
+
+    def buy_meds(self, x):
+        self.coins -= 25 * x
+        self.meds += x
 
     def spinAndWin(self):
         self.coins -= 600
         prize = random.choice(['xp', 'coins', 'tanks', 'fighterJets', 'soldiers', 'bombs', 'meds'])
         if prize == 'xp':
-            self.xp += random.randint(1,10)
+            self.xp += random.randint(1, 10)
         if prize == 'coins':
-            self.coins += random.randint(20,300) + random.randint(20,600) + random.randint(60,600)
+            self.coins += random.randint(20, 300) + random.randint(20, 600) + random.randint(60, 600)
         if prize == 'tanks':
-            self.tanks += random.randint(1,5) + random.randint(0,5)
+            self.tanks += random.randint(1, 5) + random.randint(0, 5)
         if prize == 'fighterJets':
-            self.fighterJets += random.randint(1,3) + random.randint(0,2)
+            self.fighterJets += random.randint(1, 3) + random.randint(0, 2)
         if prize == 'soldiers':
-            self.soldiers += random.randint(50,500) + random.randint(50,500) + random.randint(50,500) + random.randint(50,500)
+            self.soldiers += random.randint(50, 500) + random.randint(50, 500) + random.randint(50, 500) + random.randint(50, 500)
         if prize == 'bombs':
-            self.bombs += random.randint(3,10) + random.randint(3, 10) + random.randint(4, 10)
+            self.bombs += random.randint(3, 10) + random.randint(3, 10) + random.randint(4, 10)
         if prize == 'meds':
-            self.meds += random.randint(5,30) + random.randint(5,30)
+            self.meds += random.randint(5, 30) + random.randint(5, 30)
+
 
 @client.event
 async def on_ready():
@@ -72,6 +73,4 @@ async def on_ready():
     await general_channel.send(random.choice(greeting_msg))
 
 
-
 client.run(os.getenv('DISCORD_TOKEN'))
-
