@@ -178,7 +178,7 @@ class Player:
 @client.event
 async def on_ready():
     general_channel = client.get_channel(817437302367191123)
-    greeting_msg = ['Yo!', 'Hello!', 'Wassup!']
+    greeting_msg = ['Yo!', 'Hello!', 'Wassup!', 'How do you do?', 'Hi', 'Namaste', 'Sat Sri Akal', 'Aloha']
     await general_channel.send(random.choice(greeting_msg))
 
 
