@@ -43,7 +43,7 @@ class Player:
         self.xp += int(1*x/500)
 
     def buy_bombs(self, x):
-        self.coins -= 50 * x
+        self.coins -= 10 * x
         self.bombs += x
         self.xp += int(x/15)
 
@@ -69,8 +69,7 @@ class Player:
             self.bombs += random.randint(3, 10) + random.randint(3, 10) + random.randint(4, 10)
         if prize == 'meds':
             self.meds += random.randint(5, 30) + random.randint(5, 30)
-
-    def battle(self, player):
+        def battle(self, player):
         if isinstance(player, Player):
 
             chance_factor = random.randint(0,1)
@@ -183,7 +182,7 @@ list_pl = [hemank, harshit]
 @client.event
 async def on_ready():
     general_channel = client.get_channel(817437302367191123)
-    greeting_msg = ['Yo!', 'Hello!', 'Wassup!', 'How do you do?', 'Hi', 'Namaste', 'Sat Sri Akal', 'Aloha']
+    greeting_msg = ['Yo!', 'Hello!', 'Sup!', 'How do you do?', 'Hi', 'Namaste', 'Sat Sri Akal', 'Aloha', 'Konichiva', 'Have a good day', 'Be positive']
     await general_channel.send(random.choice(greeting_msg))
 
 @bot.command(aliases=[' battle', 'battle', ' fight', 'fight'])
