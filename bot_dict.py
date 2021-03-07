@@ -165,6 +165,7 @@ async def train(ctx, name: str):
 
 
 @bot.command(aliases=['spin'])
+@commands.cooldown(1, 120, commands.BucketType.user)
 async def spinAndWin(ctx, name: str):
     players[name]["coins"] -= 600
     prize = random.choice(['xp', 'coins', 'tanks', 'fighterJets', 'soldiers', 'bombs', 'meds'])
