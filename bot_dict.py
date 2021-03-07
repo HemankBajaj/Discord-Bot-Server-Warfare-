@@ -54,7 +54,7 @@ async def register(ctx, name: str):
 @commands.cooldown(1, 86400, commands.BucketType.user)
 async def delete(ctx, name:str):
     players.pop(name)
-    ctx.send("Account of " + name + "deleted successfully.")
+    await ctx.send("Account of " + name + "deleted successfully.")
     with open("players.json", "w") as file:
         json.dump(players, file)
 
@@ -89,7 +89,7 @@ async def career(ctx, name):
 @bot.command()
 async def coins(ctx, name):
     await ctx.send(name + "\nCOINS = " + str(players[name]["coins"])
-                   + "\nTANKS = " + str(players[name]["tanks"]))
+                   + "\nXP = " + str(players[name]["xp"]))
 
 @bot.command(aliases= ['weapon'])
 async def weapons(ctx, name):
@@ -125,29 +125,42 @@ async def shop(ctx):
 async def buy(ctx, name: str, item: str, x: int):
 
     if item == "tanks":
-        players[name]["tanks"] += x
-        players[name]["coins"] -= 400 * x
-        players[name]["xp"] += int(2 * x)
-        await ctx.send("Bought {} tanks.\nCurrent Balance = {}".format(x, players[name]["coins"]))
+        if players[name]["coins"] > 400 * x:
+            players[name]["tanks"] += x
+            players[name]["coins"] -= 400 * x
+            players[name]["xp"] += int(2 * x)
+            await ctx.send("Bought {} tanks.\nCurrent Balance = {}".format(x, players[name]["coins"]))
     if item == "fighterJets":
-        players[name]["fighterJets"] += x
-        players[name]["coins"] -= 800 * x
-        players[name]["xp"] += int(5 * x)
-        await ctx.send("Bought {} fighter jets.\nCurrent Balance = {}".format(x, players[name]["coins"]))
-    if item == "soldiers":
-        players[name]["soldiers"] += x
-        players[name]["coins"] -= 3 * x
-        players[name]["xp"] += int(1 * x / 500)
-        await ctx.send("Bought {} soldiers.\nCurrent Balance = {}".format(x, players[name]["coins"]))
+        if players[name]["coins"] > 800 * x:
+            players[name]["fighterJets"] += x
+            players[name]["coins"] -= 800 * x
+            players[name]["xp"] += int(5 * x)
+            await ctx.send("Bought {} fighter jets.\nCurrent Balance = {}".format(x, players[name]["coins"]))
+        else:
+            await ctx.send("Baraabar Paisa la re baba!")
+        if item == "soldiers":
+            if players[name]["coins"] > 3 * x:
+                players[name]["soldiers"] += x
+                players[name]["coins"] -= 3 * x
+                players[name]["xp"] += int(1 * x / 500)
+                await ctx.send("Bought {} soldiers.\nCurrent Balance = {}".format(x, players[name]["coins"]))
+            else:
+                await ctx.send("Baraabar Paisa la re baba!")
     if item == "meds":
-        players[name]["meds"] += x
-        players[name]["coins"] -= 25 * x
-        players[name]["xp"] += int(x / 15)
-        await ctx.send("Bought {} meds.\nCurrent Balance = {}".format(x, players[name]["coins"]))
+        if players[name]["coins"] > 25 * x:
+            players[name]["meds"] += x
+            players[name]["coins"] -= 25 * x
+            players[name]["xp"] += int(x / 15)
+            await ctx.send("Bought {} meds.\nCurrent Balance = {}".format(x, players[name]["coins"]))
+        else:
+            await ctx.send("Baraabar Paisa la re baba!")
     if item == "bombs":
-        players[name]["bombs"] += x
-        players[name]["coins"] -= 50 * x
-        players[name]["xp"] += int(3 * x / 100)
+        if players[name]["coins"] > 50 * x:
+            players[name]["bombs"] += x
+            players[name]["coins"] -= 50 * x
+            players[name]["xp"] += int(3 * x / 100)
+        else:
+            await ctx.send("Baraabar Paisa la re baba!")
         await ctx.send("Bought {} bombs.\nCurrent Balance = {}".format(x, players[name]["coins"]))
     with open("players.json", "w") as file:  # updates json file after function execution
         json.dump(players, file)
