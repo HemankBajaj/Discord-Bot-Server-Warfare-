@@ -1,10 +1,8 @@
 import json
 import random
 import os
-import discord
 from discord.ext import commands
 from dotenv import load_dotenv
-from discord.ext.commands import cooldown, BucketType
 
 load_dotenv('.env')
 
@@ -13,12 +11,12 @@ with open('players.json') as f:
 
 bot = commands.Bot(command_prefix='-war ')
 
-
+greeting_msg = ['Yo!', 'Hello!', 'Wassup!', 'How do you do?', 'Hi', 'Namaste', 'Sat Sri Akal', 'Aloha']
+i = random.randint(0, len(greeting_msg)-1)
 @bot.event
 async def on_ready():
     general_channel = bot.get_channel(817437302367191123)
-    greeting_msg = ['Yo!', 'Hello!', 'Wassup!', 'How do you do?', 'Hi', 'Namaste', 'Sat Sri Akal', 'Aloha']
-    await general_channel.send(random.choice(greeting_msg))
+    await general_channel.send(str(greeting_msg[i]))
 
 @bot.event
 async def on_command_error(ctx, error):
@@ -165,6 +163,7 @@ async def train(ctx, name: str):
 
 
 @bot.command(aliases=['spin'])
+@commands.cooldown(1, 120, commands.BucketType.user)
 async def spinAndWin(ctx, name: str):
     players[name]["coins"] -= 600
     prize = random.choice(['xp', 'coins', 'tanks', 'fighterJets', 'soldiers', 'bombs', 'meds'])
@@ -175,28 +174,28 @@ async def spinAndWin(ctx, name: str):
     if prize == 'coins':
         bonus = random.randint(20, 300) + random.randint(20, 600) + random.randint(60, 600)
         players[name]["coins"] += bonus
-        await ctx.send('You won {} fighter jets'.format(bonus))
+        await ctx.send(name+' won {} fighter jets'.format(bonus))
     if prize == 'tanks':
         bonus = random.randint(1, 5) + random.randint(0, 5)
         players[name]["tanks"] += bonus
-        await ctx.send('You won {} tanks'.format(bonus))
+        await ctx.send(name+' won {} tanks'.format(bonus))
     if prize == 'fighterJets':
         bonus = random.randint(1, 3) + random.randint(0, 2)
         players[name]["fighterJets"] += bonus
-        await ctx.send('You won {} fighter jets'.format(bonus))
+        await ctx.send(name+' won {} fighter jets'.format(bonus))
     if prize == 'soldiers':
         bonus = random.randint(50, 500) + random.randint(50, 500) + random.randint(50, 500) + random.randint(
             50, 500)
         players[name]["soldiers"] += bonus
-        await ctx.send('You won {} soldiers'.format(bonus))
+        await ctx.send(name+' won {} soldiers'.format(bonus))
     if prize == 'bombs':
         bonus = random.randint(3, 10) + random.randint(3, 10) + random.randint(4, 10)
         players[name]["bombs"] += bonus
-        await ctx.send('You won {} bombs'.format(bonus))
+        await ctx.send(name+' won {} bombs'.format(bonus))
     if prize == 'meds':
         bonus = random.randint(5, 30) + random.randint(5, 30)
         players[name]["meds"] += bonus
-        await ctx.send('You won {} meds'.format(bonus))
+        await ctx.send(name+' won {} meds'.format(bonus))
 
     with open("players.json", "w") as file:  # updates json file after function execution
         json.dump(players, file)
@@ -383,5 +382,202 @@ async def battle(ctx, name1:str, name2:str):
         await ctx.send('Both opponents were found to be of equal power, so fight some other day!')
     with open("players.json", "w") as file:  # updates json file after function execution
         json.dump(players, file)
+
+
+@bot.command()
+@commands.cooldown(1, 120, commands.BucketType.user)
+async def winMoney(ctx, name):
+    prize = random.randint(50,500)
+    players[name]["coins"] += prize
+    await ctx.send("Hurray " + name + " won " + str(prize) + " coins!")
+    with open("players.json", "w") as file:  # updates json file after function execution
+        json.dump(players, file)
+
+# @bot.command()
+# @commands.cooldown(1, 120, commands.BucketType.user)
+# async def random(ctx, name1):
+#     li_players = []
+#     for x in players:
+#         li_players.append(x)
+#     name2 = random.choice(li_players)
+#
+#     chance_factor = random.randint(0, 1)
+#
+#     xp_p1_num = players[name1]["xp"]
+#     xp_p2_num = players[name2]["xp"]
+#     xp_den = players[name1]["xp"] + players[name2]["xp"]
+#     p1_xp = 0.3 * xp_p1_num / xp_den
+#     p2_xp = 0.3 * xp_p2_num / xp_den
+#
+#     bombs_p1_num = players[name1]["bombs"]
+#     bombs_p2_num = players[name2]["bombs"]
+#     bombs_den = players[name1]["bombs"] + players[name2]["bombs"]
+#     p1_bombs = 0.08 * bombs_p1_num / bombs_den
+#     p2_bombs = 0.08 * bombs_p2_num / bombs_den
+#
+#     soldiers_p1_num = players[name1]["soldiers"]
+#     soldiers_p2_num = players[name2]["soldiers"]
+#     soldiers_den = players[name1]["soldiers"] + players[name2]["soldiers"]
+#     p1_soldiers = 0.02 * soldiers_p1_num / soldiers_den
+#     p2_soldiers = 0.02 * soldiers_p2_num / soldiers_den
+#
+#     meds_p1_num = players[name1]["meds"]
+#     meds_p2_num = players[name2]["meds"]
+#     meds_den = players[name1]["meds"] + players[name2]["meds"]
+#     p1_meds = 0.05 * meds_p1_num / meds_den
+#     p2_meds = 0.05 * meds_p2_num / meds_den
+#
+#     fighterJets_p1_num = players[name1]["fighterJets"]
+#     fighterJets_p2_num = players[name2]["fighterJets"]
+#     fighterJets_den = players[name1]["fighterJets"] + players[name2]["fighterJets"]
+#     p1_fighterJets = 0.20 * fighterJets_p1_num / fighterJets_den
+#     p2_fighterJets = 0.20 * fighterJets_p2_num / fighterJets_den
+#
+#     tanks_p1_num = players[name1]["tanks"]
+#     tanks_p2_num = players[name2]["tanks"]
+#     tanks_den = players[name1]["tanks"] + players[name2]["tanks"]
+#     p1_tanks = 0.15 * tanks_p1_num / tanks_den
+#     p2_tanks = 0.15 * tanks_p2_num / tanks_den
+#
+#     if chance_factor == 1:
+#         y = 0
+#     else:
+#         y = 1
+#
+#     p1_score = p1_xp + p1_meds + p1_bombs + p1_tanks + p1_fighterJets + p1_soldiers + 0.2 * (1 - y)
+#     p2_score = p2_xp + p2_meds + p2_bombs + p2_tanks + p1_fighterJets + p2_soldiers + 0.2 * y
+#
+#     if p1_score > p2_score:
+#         players[name1]["victories"] += 1
+#         players[name2]["defeats"] += 1
+#
+#         # xp
+#         p1_xp_inc = random.randint(5, 10)
+#         p2_xp_inc = random.randint(1, 5)
+#         players[name1]["xp"] += p1_xp_inc
+#         players[name2]["xp"] += p2_xp_inc
+#
+#         # army resources
+#         p1_bombs_decreased = random.randint(10, 40)
+#         p2_bombs_decreased = random.randint(40, 70)
+#         players[name1]["bombs"] = int(players[name1]["bombs"] * (100 - p1_bombs_decreased) / 100)
+#         players[name2]["bombs"] = int(players[name2]["bombs"] * (100 - p2_bombs_decreased) / 100)
+#
+#         p1_meds_decreased = random.randint(10, 40)
+#         p2_meds_decreased = random.randint(40, 70)
+#         players[name1]["meds"] = int(players[name1]["meds"] * (100 - p1_meds_decreased) / 100)
+#         players[name2]["meds"] = int(players[name2]["meds"] * (100 - p2_meds_decreased) / 100)
+#
+#         p1_soldiers_decreased = random.randint(10, 40)
+#         p2_soldiers_decreased = random.randint(40, 70)
+#         players[name1]["soldiers"] = int(players[name1]["soldiers"] * (100 - p1_soldiers_decreased) / 100)
+#         players[name2]["soldiers"] = int(players[name2]["soldiers"] * (100 - p2_soldiers_decreased) / 100)
+#
+#         p1_tanks_decreased = random.randint(10, 40)
+#         p2_tanks_decreased = random.randint(40, 70)
+#         players[name1]["tanks"] = int(players[name1]["tanks"] * (100 - p1_tanks_decreased) / 100)
+#         players[name2]["tanks"] = int(players[name2]["tanks"] * (100 - p2_tanks_decreased) / 100)
+#
+#         p1_fighterJets_decreased = random.randint(10, 40)
+#         p2_fighterJets_decreased = random.randint(40, 70)
+#         players[name1]["fighterJets"] = int(players[name1]["fighterJets"] * (100 - p1_fighterJets_decreased) / 100)
+#         players[name2]["fighterJets"] = int(players[name2]["fighterJets"] * (100 - p2_fighterJets_decreased) / 100)
+#
+#         # wealth
+#         alpha = random.randint(30, 60)
+#         p1_coin_gain = int(alpha * players[name2]["coins"] / 100)
+#         players[name1]["coins"] += p1_coin_gain
+#         players[name2]["coins"] = int((100 - alpha) * players[name2]["coins"] / 100)
+#
+#         s = "The battle was won by " + name1 + "\n"
+#         s += "\n**** Battle Statistics****\n\n"
+#         s += "***" + name1 + "***"
+#         s += "\nCoins Gained = " + str(p1_coin_gain)
+#         s += "\nXP increased = " + str(p1_xp_inc)
+#         s += "\nTANKS Lost = " + str(p1_tanks_decreased) + "%"
+#         s += "\nFIGHTER JETS Lost = " + str(p1_fighterJets_decreased) + "%"
+#         s += "\nBOMBS Lost = " + str(p1_bombs_decreased) + "%"
+#         s += "\nSOLDIERS Lost = " + str(p1_soldiers_decreased) + "%"
+#         s += "\nTANKS Lost = " + str(p1_tanks_decreased) + "%" + "\n\n"
+#
+#         s += "***" + name2 + "***"
+#         s += "\nCoins Lost = " + str(p1_coin_gain)
+#         s += "\nXP increased = " + str(p2_xp_inc)
+#         s += "\nTANKS Lost = " + str(p2_tanks_decreased) + "%"
+#         s += "\nFIGHTER JETS Lost = " + str(p2_fighterJets_decreased) + "%"
+#         s += "\nBOMBS Lost = " + str(p2_bombs_decreased) + "%"
+#         s += "\nSOLDIERS Lost = " + str(p2_soldiers_decreased) + "%"
+#         s += "\nTANKS Lost = " + str(p2_tanks_decreased) + "%" + "\n\n"
+#
+#         await ctx.send(s)
+#
+#     elif p1_score < p2_score:
+#         players[name2]["victories"] += 1
+#         players[name1]["defeats"] += 1
+#
+#         # xp
+#         p2_xp_inc = random.randint(5, 10)
+#         p1_xp_inc = random.randint(1, 5)
+#         players[name1]["xp"] += p1_xp_inc
+#         players[name2]["xp"] += p2_xp_inc
+#
+#         # army resources
+#         p2_bombs_decreased = random.randint(10, 40)
+#         p1_bombs_decreased = random.randint(40, 70)
+#         players[name1]["bombs"] = int(players[name1]["bombs"] * (100 - p1_bombs_decreased) / 100)
+#         players[name2]["bombs"] = int(players[name2]["bombs"] * (100 - p2_bombs_decreased) / 100)
+#
+#         p2_meds_decreased = random.randint(10, 40)
+#         p1_meds_decreased = random.randint(40, 70)
+#         players[name1]["meds"] = int(players[name1]["meds"] * (100 - p1_meds_decreased) / 100)
+#         players[name2]["meds"] = int(players[name2]["meds"] * (100 - p2_meds_decreased) / 100)
+#
+#         p2_soldiers_decreased = random.randint(10, 40)
+#         p1_soldiers_decreased = random.randint(40, 70)
+#         players[name1]["soldiers"] = int(players[name1]["soldiers"] * (100 - p1_soldiers_decreased) / 100)
+#         players[name2]["soldiers"] = int(players[name2]["soldiers"] * (100 - p2_soldiers_decreased) / 100)
+#
+#         p2_tanks_decreased = random.randint(10, 40)
+#         p1_tanks_decreased = random.randint(40, 70)
+#         players[name1]["tanks"] = int(players[name1]["tanks"] * (100 - p1_tanks_decreased) / 100)
+#         players[name2]["tanks"] = int(players[name2]["tanks"] * (100 - p2_tanks_decreased) / 100)
+#
+#         p2_fighterJets_decreased = random.randint(10, 40)
+#         p1_fighterJets_decreased = random.randint(40, 70)
+#         players[name1]["fighterJets"] = int(players[name1]["fighterJets"] * (100 - p1_fighterJets_decreased) / 100)
+#         players[name2]["fighterJets"] = int(players[name2]["fighterJets"] * (100 - p2_fighterJets_decreased) / 100)
+#
+#         alpha = random.randint(30, 60)
+#         p2_coin_gain = int(alpha * players[name1]["coins"] / 100)
+#         players[name2]["coins"] += p2_coin_gain
+#         players[name1]["coins"] = int((100 - alpha) * players[name1]["coins"] / 100)
+#
+#         s = "The battle was won by " + name2
+#         "\n"
+#         s += "**** Battle Statistics****\n\n"
+#         s += "***" + name1 + "***"
+#         s += "\nCoins Lost = " + str(p2_coin_gain)
+#         s += "\nXP increased = " + str(p1_xp_inc)
+#         s += "\nTANKS Lost = " + str(p1_tanks_decreased) + "%"
+#         s += "\nFIGHTER JETS Lost = " + str(p1_fighterJets_decreased) + "%"
+#         s += "\nBOMBS Lost = " + str(p1_bombs_decreased) + "%"
+#         s += "\nSOLDIERS Lost = " + str(p1_soldiers_decreased) + "%"
+#         s += "\nTANKS Lost = " + str(p1_tanks_decreased) + "%" + "\n\n"
+#
+#         s += "***" + name2 + "***"
+#         s += "\nCoins Gained = " + str(p2_coin_gain)
+#         s += "\nXP increased = " + str(p2_xp_inc)
+#         s += "\nTANKS Lost = " + str(p2_tanks_decreased) + "%"
+#         s += "\nFIGHTER JETS Lost = " + str(p2_fighterJets_decreased) + "%"
+#         s += "\nBOMBS Lost = " + str(p2_bombs_decreased) + "%"
+#         s += "\nSOLDIERS Lost = " + str(p2_soldiers_decreased) + "%"
+#         s += "\nTANKS Lost = " + str(p2_tanks_decreased) + "%" + "\n\n"
+#
+#         await ctx.send(s)
+#
+#     else:
+#         await ctx.send('Both opponents were found to be of equal power, so fight some other day!')
+#     with open("players.json", "w") as file:  # updates json file after function execution
+#         json.dump(players, file)
 
 bot.run(os.getenv('DISCORD_TOKEN'))
