@@ -138,14 +138,14 @@ async def buy(ctx, name: str, item: str, x: int):
             await ctx.send("Bought {} fighter jets.\nCurrent Balance = {}".format(x, players[name]["coins"]))
         else:
             await ctx.send("Baraabar Paisa la re baba!")
-        if item == "soldiers":
-            if players[name]["coins"] > 3 * x:
-                players[name]["soldiers"] += x
-                players[name]["coins"] -= 3 * x
-                players[name]["xp"] += int(1 * x / 500)
-                await ctx.send("Bought {} soldiers.\nCurrent Balance = {}".format(x, players[name]["coins"]))
-            else:
-                await ctx.send("Baraabar Paisa la re baba!")
+    if item == "soldiers":
+        if players[name]["coins"] > 3 * x:
+            players[name]["soldiers"] += x
+            players[name]["coins"] -= 3 * x
+            players[name]["xp"] += int(1 * x / 500)
+            await ctx.send("Bought {} soldiers.\nCurrent Balance = {}".format(x, players[name]["coins"]))
+        else:
+            await ctx.send("Baraabar Paisa la re baba!")
     if item == "meds":
         if players[name]["coins"] > 25 * x:
             players[name]["meds"] += x
