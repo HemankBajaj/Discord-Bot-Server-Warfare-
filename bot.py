@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 load_dotenv('.env')
 
 client = discord.Client()
-
+bot = commands.Bot(command_prefix='-war')
 
 class Player:
     def __init__(self, player_name, player_id):
@@ -120,6 +120,7 @@ class Player:
             pl_score = pl_bombs + pl_xp + pl_meds + pl_fighterJets + pl_tanks + pl_soldiers + 0.2*y
 
             if self_score > pl_score:
+                winner = self.name
                 self.victories += 1
                 player.defeats += 1
 
@@ -146,6 +147,7 @@ class Player:
                 player.coins = int((100 - alpha)*player.coins/100)
 
             else:
+                winner = player.name
                 player.victories += 1
                 player.defeats += 1
 
@@ -175,11 +177,22 @@ class Player:
             raise TypeError
 
 
+hemank = Player('Hemank', '001')
+harshit = Player('Harshit', '002')
+list_pl = [hemank, harshit]
 @client.event
 async def on_ready():
     general_channel = client.get_channel(817437302367191123)
     greeting_msg = ['Yo!', 'Hello!', 'Wassup!', 'How do you do?', 'Hi', 'Namaste', 'Sat Sri Akal', 'Aloha']
     await general_channel.send(random.choice(greeting_msg))
+
+@bot.command(aliases=[' battle', 'battle', ' fight', 'fight'])
+async def battle(ctx, player):
+    if isinstance(player, Player):
+        hemank.battle(player)
+        await ctx.send("Winner:" + winner)
+    else:
+        raise TypeError
 
 
 client.run(os.getenv('DISCORD_TOKEN'))
