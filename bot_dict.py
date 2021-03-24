@@ -2,6 +2,7 @@ import json
 import random
 import os
 from discord.ext import commands
+import requests
 from dotenv import load_dotenv
 
 load_dotenv('.env')
@@ -51,10 +52,10 @@ async def register(ctx, name: str):
                    + "\nDEFEATS = " + str(players[name]["defeats"]))
 
 @bot.command(aliases=['remove'])
-@commands.cooldown(1, 86400, commands.BucketType.user)
+# @commands.cooldown(1, 86400, commands.BucketType.user)
 async def delete(ctx, name:str):
     players.pop(name)
-    await ctx.send("Account of " + name + "deleted successfully.")
+    await ctx.send("Account of " + name + " deleted successfully.")
     with open("players.json", "w") as file:
         json.dump(players, file)
 
@@ -178,43 +179,45 @@ async def train(ctx, name: str):
 @bot.command(aliases=['spin'])
 @commands.cooldown(1, 120, commands.BucketType.user)
 async def spinAndWin(ctx, name: str):
-    players[name]["coins"] -= 600
-    prize = random.choice(['xp', 'coins', 'tanks', 'fighterJets', 'soldiers', 'bombs', 'meds'])
-    if prize == 'xp':
-        bonus = random.randint(1, 10)
-        players[name]["xp"] += bonus
-        await ctx.send('+ {} XP'.format(bonus))
-    if prize == 'coins':
-        bonus = random.randint(20, 300) + random.randint(20, 600) + random.randint(60, 600)
-        players[name]["coins"] += bonus
-        await ctx.send(name+' won {} fighter jets'.format(bonus))
-    if prize == 'tanks':
-        bonus = random.randint(1, 5) + random.randint(0, 5)
-        players[name]["tanks"] += bonus
-        await ctx.send(name+' won {} tanks'.format(bonus))
-    if prize == 'fighterJets':
-        bonus = random.randint(1, 3) + random.randint(0, 2)
-        players[name]["fighterJets"] += bonus
-        await ctx.send(name+' won {} fighter jets'.format(bonus))
-    if prize == 'soldiers':
-        bonus = random.randint(50, 500) + random.randint(50, 500) + random.randint(50, 500) + random.randint(
-            50, 500)
-        players[name]["soldiers"] += bonus
-        await ctx.send(name+' won {} soldiers'.format(bonus))
-    if prize == 'bombs':
-        bonus = random.randint(3, 10) + random.randint(3, 10) + random.randint(4, 10)
-        players[name]["bombs"] += bonus
-        await ctx.send(name+' won {} bombs'.format(bonus))
-    if prize == 'meds':
-        bonus = random.randint(5, 30) + random.randint(5, 30)
-        players[name]["meds"] += bonus
-        await ctx.send(name+' won {} meds'.format(bonus))
+    if players[name]["coins"]>=600:
+        players[name]["coins"] -= 600
+        prize = random.choice(['xp', 'coins', 'tanks', 'fighterJets', 'soldiers', 'bombs', 'meds'])
+        if prize == 'xp':
+            bonus = random.randint(1, 10)
+            players[name]["xp"] += bonus
+            await ctx.send('+ {} XP'.format(bonus))
+        if prize == 'coins':
+            bonus = random.randint(20, 300) + random.randint(20, 600) + random.randint(60, 600)
+            players[name]["coins"] += bonus
+            await ctx.send(name+' won {} fighter jets'.format(bonus))
+        if prize == 'tanks':
+            bonus = random.randint(1, 5) + random.randint(0, 5)
+            players[name]["tanks"] += bonus
+            await ctx.send(name+' won {} tanks'.format(bonus))
+        if prize == 'fighterJets':
+            bonus = random.randint(1, 3) + random.randint(0, 2)
+            players[name]["fighterJets"] += bonus
+            await ctx.send(name+' won {} fighter jets'.format(bonus))
+        if prize == 'soldiers':
+            bonus = random.randint(50, 500) + random.randint(50, 500) + random.randint(50, 500) + random.randint(
+                50, 500)
+            players[name]["soldiers"] += bonus
+            await ctx.send(name+' won {} soldiers'.format(bonus))
+        if prize == 'bombs':
+            bonus = random.randint(3, 10) + random.randint(3, 10) + random.randint(4, 10)
+            players[name]["bombs"] += bonus
+            await ctx.send(name+' won {} bombs'.format(bonus))
+        if prize == 'meds':
+            bonus = random.randint(5, 30) + random.randint(5, 30)
+            players[name]["meds"] += bonus
+            await ctx.send(name+' won {} meds'.format(bonus))
 
-    with open("players.json", "w") as file:  # updates json file after function execution
-        json.dump(players, file)
-
+        with open("players.json", "w") as file:  # updates json file after function execution
+            json.dump(players, file)
+    else:
+        await ctx.send("PAISE KAM HAIN BRO!" + str(600 - players[name]["coins"]) + "coins aur laao!")
 @bot.command()
-@commands.cooldown(1, 120, commands.BucketType.user)
+# @commands.cooldown(1, 120, commands.BucketType.user)
 async def battle(ctx, name1:str, name2:str):
 
     chance_factor = random.randint(0, 1)
@@ -304,33 +307,33 @@ async def battle(ctx, name1:str, name2:str):
         p1_coin_gain = int(alpha*players[name2]["coins"]/100)
         players[name1]["coins"] += p1_coin_gain
         players[name2]["coins"] = int((100 - alpha) * players[name2]["coins"]/ 100)
+        if p1_coin_gain <= players[name2]["coins"]:
+            s ="The battle was won by " + name1 + "\n"
+            s += "\n**** Battle Statistics****\n\n"
+            s += "***" + name1 + "***"
+            s += "\nCoins Gained = " + str(p1_coin_gain)
+            s += "\nXP increased = " + str(p1_xp_inc)
+            s += "\nTANKS Lost = "  + str(p1_tanks_decreased) + "%"
+            s += "\nFIGHTER JETS Lost = "  + str(p1_fighterJets_decreased) + "%"
+            s += "\nBOMBS Lost = "  + str(p1_bombs_decreased) + "%"
+            s += "\nSOLDIERS Lost = "  + str(p1_soldiers_decreased) + "%"
+            s += "\nTANKS Lost = "  + str(p1_tanks_decreased) + "%" + "\n\n"
 
-        s ="The battle was won by " + name1 + "\n"
-        s += "\n**** Battle Statistics****\n\n"
-        s += "***" + name1 + "***"
-        s += "\nCoins Gained = " + str(p1_coin_gain)
-        s += "\nXP increased = " + str(p1_xp_inc)
-        s += "\nTANKS Lost = "  + str(p1_tanks_decreased) + "%"
-        s += "\nFIGHTER JETS Lost = "  + str(p1_fighterJets_decreased) + "%"
-        s += "\nBOMBS Lost = "  + str(p1_bombs_decreased) + "%"
-        s += "\nSOLDIERS Lost = "  + str(p1_soldiers_decreased) + "%"
-        s += "\nTANKS Lost = "  + str(p1_tanks_decreased) + "%" + "\n\n"
-
-        s += "***" + name2 + "***"
-        s += "\nCoins Lost = " + str(p1_coin_gain)
-        s += "\nXP increased = " + str(p2_xp_inc)
-        s += "\nTANKS Lost = "  + str(p2_tanks_decreased) + "%"
-        s += "\nFIGHTER JETS Lost = "  + str(p2_fighterJets_decreased) + "%"
-        s += "\nBOMBS Lost = "  + str(p2_bombs_decreased) + "%"
-        s += "\nSOLDIERS Lost = "  + str(p2_soldiers_decreased) + "%"
-        s += "\nTANKS Lost = "  + str(p2_tanks_decreased) + "%" + "\n\n"
-
-        await ctx.send(s)
+            s += "***" + name2 + "***"
+            s += "\nCoins Lost = " + str(p1_coin_gain)
+            s += "\nXP increased = " + str(p2_xp_inc)
+            s += "\nTANKS Lost = " + str(p2_tanks_decreased) + "%"
+            s += "\nFIGHTER JETS Lost = " + str(p2_fighterJets_decreased) + "%"
+            s += "\nBOMBS Lost = " + str(p2_bombs_decreased) + "%"
+            s += "\nSOLDIERS Lost = " + str(p2_soldiers_decreased) + "%"
+            s += "\nTANKS Lost = " + str(p2_tanks_decreased) + "%" + "\n\n"
+            await ctx.send(s)
+        else:
+            await ctx.send(name2 + "is too poor to be attacked.")
 
     elif p1_score < p2_score:
         players[name2]["victories"] += 1
         players[name1]["defeats"] += 1
-
         # xp
         p2_xp_inc = random.randint(5, 10)
         p1_xp_inc = random.randint(1, 5)
@@ -367,35 +370,53 @@ async def battle(ctx, name1:str, name2:str):
         p2_coin_gain = int(alpha * players[name1]["coins"] / 100)
         players[name2]["coins"] += p2_coin_gain
         players[name1]["coins"] = int((100 - alpha) * players[name1]["coins"] / 100)
+        if p2_coin_gain <= players[name1]["coins"]:
+            s = "The battle was won by " + name2
+            "\n"
+            s += "**** Battle Statistics****\n\n"
+            s += "***" + name1 + "***"
+            s += "\nCoins Lost = " + str(p2_coin_gain)
+            s += "\nXP increased = " + str(p1_xp_inc)
+            s += "\nTANKS Lost = " + str(p1_tanks_decreased) + "%"
+            s += "\nFIGHTER JETS Lost = " + str(p1_fighterJets_decreased) + "%"
+            s += "\nBOMBS Lost = " + str(p1_bombs_decreased) + "%"
+            s += "\nSOLDIERS Lost = " + str(p1_soldiers_decreased) + "%"
+            s += "\nTANKS Lost = " + str(p1_tanks_decreased) + "%" + "\n\n"
 
-        s = "The battle was won by " + name2
-        "\n"
-        s += "**** Battle Statistics****\n\n"
-        s += "***" + name1 + "***"
-        s += "\nCoins Lost = " + str(p2_coin_gain)
-        s += "\nXP increased = " + str(p1_xp_inc)
-        s += "\nTANKS Lost = " + str(p1_tanks_decreased) + "%"
-        s += "\nFIGHTER JETS Lost = " + str(p1_fighterJets_decreased) + "%"
-        s += "\nBOMBS Lost = " + str(p1_bombs_decreased) + "%"
-        s += "\nSOLDIERS Lost = " + str(p1_soldiers_decreased) + "%"
-        s += "\nTANKS Lost = " + str(p1_tanks_decreased) + "%" + "\n\n"
+            s += "***" + name2 + "***"
+            s += "\nCoins Gained = " + str(p2_coin_gain)
+            s += "\nXP increased = " + str(p2_xp_inc)
+            s += "\nTANKS Lost = " + str(p2_tanks_decreased) + "%"
+            s += "\nFIGHTER JETS Lost = " + str(p2_fighterJets_decreased) + "%"
+            s += "\nBOMBS Lost = " + str(p2_bombs_decreased) + "%"
+            s += "\nSOLDIERS Lost = " + str(p2_soldiers_decreased) + "%"
+            s += "\nTANKS Lost = " + str(p2_tanks_decreased) + "%" + "\n\n"
 
-        s += "***" + name2 + "***"
-        s += "\nCoins Gained = " + str(p2_coin_gain)
-        s += "\nXP increased = " + str(p2_xp_inc)
-        s += "\nTANKS Lost = " + str(p2_tanks_decreased) + "%"
-        s += "\nFIGHTER JETS Lost = " + str(p2_fighterJets_decreased) + "%"
-        s += "\nBOMBS Lost = " + str(p2_bombs_decreased) + "%"
-        s += "\nSOLDIERS Lost = " + str(p2_soldiers_decreased) + "%"
-        s += "\nTANKS Lost = " + str(p2_tanks_decreased) + "%" + "\n\n"
-
-        await ctx.send(s)
+            await ctx.send(s)
+        else:
+            await ctx.send(name1 + " is too poor to be attacked.")
 
     else:
         await ctx.send('Both opponents were found to be of equal power, so fight some other day!')
+
     with open("players.json", "w") as file:  # updates json file after function execution
         json.dump(players, file)
 
+@bot.command()
+@commands.cooldown(1, 15, commands.BucketType.user)
+async def suggest(ctx, txt):
+    if txt == 'advice':
+        response = requests.get('https://api.adviceslip.com/advice')
+        await ctx.send(response.json()['slip']['advice'])
+
+    if txt == 'activity':
+        response = requests.get('http://www.boredapi.com/api/activity/')
+        await ctx.send(response.json()['activity'])
+    if txt == 'song':
+        index = random.randint(0,127)
+        url = "http://davidpots.com/jakeworry/017%20JSON%20Grouping,%20part%203/data.json"
+        response = requests.get(url)
+        await ctx.send(response.json()["songs"][index]["title"]+" by "+response.json()['songs'][index]["artist"])
 
 @bot.command()
 @commands.cooldown(1, 120, commands.BucketType.user)
@@ -405,6 +426,7 @@ async def winMoney(ctx, name):
     await ctx.send("Hurray " + name + " won " + str(prize) + " coins!")
     with open("players.json", "w") as file:  # updates json file after function execution
         json.dump(players, file)
+
 
 # @bot.command()
 # @commands.cooldown(1, 120, commands.BucketType.user)
